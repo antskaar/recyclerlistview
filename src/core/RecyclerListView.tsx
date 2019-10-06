@@ -578,8 +578,13 @@ export default class RecyclerListView<P extends RecyclerListViewProps, S extends
     }
 
     private _onScroll = (offsetX: number, offsetY: number, rawEvent: ScrollEvent): void => {
+        var newOffsetX = offsetX;
+        if (this.props.isAndroidRTL) {
+          newOffsetX = rawEvent.nativeEvent.contentSize.width - rawEvent.nativeEvent.layoutMeasurement.width - offsetX;
+        }
+
         //Adjusting offsets using distanceFromWindow
-        this._virtualRenderer.updateOffset(offsetX, offsetY, -this.props.distanceFromWindow!, true);
+        this._virtualRenderer.updateOffset(newOffsetX, offsetY, -this.props.distanceFromWindow!, true);
 
         if (this.props.onScroll) {
             this.props.onScroll(rawEvent, offsetX, offsetY);
