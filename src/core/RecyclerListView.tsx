@@ -107,6 +107,7 @@ export interface RecyclerListViewProps {
     //For all props that need to be proxied to inner/external scrollview. Put them in an object and they'll be spread
     //and passed down. For better typescript support.
     scrollViewProps?: object;
+    isAndroidRTL?: boolean;
 }
 
 export interface RecyclerListViewState {
@@ -578,9 +579,16 @@ export default class RecyclerListView<P extends RecyclerListViewProps, S extends
     }
 
     private _onScroll = (offsetX: number, offsetY: number, rawEvent: ScrollEvent): void => {
-        var newOffsetX = offsetX;
+        let newOffsetX = offsetX;
         if (this.props.isAndroidRTL) {
-          newOffsetX = rawEvent.nativeEvent.contentSize.width - rawEvent.nativeEvent.layoutMeasurement.width - offsetX;
+          if (rawEvent &&
+            rawEvent.nativeEvent &&
+            rawEvent.nativeEvent.contentSize &&
+            rawEvent.nativeEvent.layoutMeasurement &&
+            rawEvent.nativeEvent.contentSize.width &&
+            rawEvent.nativeEvent.layoutMeasurement.width) {
+            newOffsetX = rawEvent.nativeEvent.contentSize.width - rawEvent.nativeEvent.layoutMeasurement.width - offsetX;
+          }
         }
 
         //Adjusting offsets using distanceFromWindow
@@ -715,4 +723,7 @@ RecyclerListView.propTypes = {
     //For all props that need to be proxied to inner/external scrollview. Put them in an object and they'll be spread
     //and passed down.
     scrollViewProps: PropTypes.object,
+
+    // Define Android RTL
+    isAndroidRTL: PropTypes.bool,
 };
